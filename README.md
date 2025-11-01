@@ -173,17 +173,187 @@ plt.ylabel("loss")
 plt.show()
 
 ```
-______________________________________________
-Accuracies                    |      Losses   |
-______________________________________________
-Accuracy = 92%                |   loss= 0.24  |
-Validation accuracy = 88.75%  |   loss= 0.45  |
-Test acccuracy = 89.69        |   loss= 0.43  |
-______________________________________________
-
+| Metric                     | Accuracy     | Loss     |
+|----------------------------|--------------|----------|
+| Training                   | 92%          | 0.24     |
+| Validation                 | 88.75%       | 0.45     |
+| Test                       | 89.69%       | 0.43     |
 
 ## 5. Save the model
 Save the model using [```tf.keras.models.save_model()```](https://www.tensorflow.org/api_docs/python/tf/keras/models/save_model)
 ```p
 tf.keras.models.save_model(model,"path")
 ```
+
+# Appendix:
+>The reason I chose that model architecture is that I have done multiple tests, builing and adjusting the model parameters and the data augmentation.
+
+## Model 1 (Baseline):
+### Data Preprocessing:
+- Training data was augmented by Normalization, rotate the training images by 20 degrees, the width and height were shifted by a value of 0.2, 
+and the images were horizontally flipped.
+- Test and validation data were Normalized.
+> **Note:** The training augmentation parameters were taken from a previous project.
+### Architecture:
+- (2 Conv2D layer followed by a MaxPool2D() layer) x 2
+- Activation method used for the conv layers is ReLU
+- Activation metho used for the output layer is SoftMax
+
+
+### Model evaluation:
+| Metric                     | Accuracy     | Loss     |
+|----------------------------|--------------|----------|
+| Training                   | 75%          |  0.8     |
+| Validation                 | 80%          | 1.2     |
+| Test                       | 83%          | 1.03     |
+
+## Model 2:
+### Data Preprocessing:
+- Same as the MODEL 1
+### Architecture:
+- Same as the MODEL 1, difference is in MaxPool2D(3) function
+### Model evaluation
+|Metric|Accuracy|Loss|
+|----------------------------|--------------|----------|
+|Accuracy  |77% | 0.67|
+|Validation accuracy | 83% |   0.66|
+|Test accuracy | 83%|   0.49|
+
+> **Note:**
+The MaxPool2D value does not affect the improvement of the model
+
+
+## Model 3:
+### Architecture:
+- Same as the MODEL 2, difference is in number of epochs (6->12 epochs)
+### Model evaluation:
+|Metric|Accuracy|Loss|
+|----------------------------|--------------|----------|
+|Accuracy | 82%|  0.59|
+|Validation accuracy| 84%|  0.67|
+|Test acccuracy | 82%|   0.519|
+> **NOTE:**
+A slight difference between MODEL 2 and MODEL 3 in the Validation accuracy (Model 2 : 83% < Model 3 : 84%).
+Moreover, the model 3 Accuracy is higher than the previous model's one (Model2: 77% < model 3: 82%). However,
+the test accuracy of the 2nd model is higher due to an overfitting.
+
+> ***Conclusion:***
+The optimal number of epochs is 6.
+
+
+## Model 4:
+### Architecture:
+- Learning rate = 0.01
+## Model evaluation:
+|Metric|Accuracy|Loss|
+|----------------------------|--------------|----------|
+|Accuracy | 12%| <2|
+|Validation accuracy | 10%| <2|
+|Test acccuracy | 9.8%|<2|
+
+>**Note:**
+The MODEL 4 accuracy is less than 10% due to the high learning rate that cause oferfitting.
+
+>***Conclusion:***
+The optimial Learning rate is 0.001 (default)
+
+
+## Model 5:
+### Architecture:
+- Increasing the number of conv and maxpool layers (Adding two more layers of conv and one of maxpool). 
+### Model evaluation:
+|Metric|Accuracy|Loss|
+|----------------------------|--------------|----------|
+|Accuracy | 72%| 0.8 |
+|Validation accuracy| 76%| 0.79|
+|Test acccuracy | 76%| 0.67|
+
+>**Note:**
+The test accuracy drops from (in the model 2) 83% to 76% due to overfittig
+
+>***Conclusion:***
+Adding more layers lead to model overfitting
+
+
+## Model 6:
+### Architecture:
+> Model architecture inspired from [CNN-astronomical classification](https://www.kaggle.com/code/devanshshukla123/cnn-astronomical-classification#Step-10:-Test-Predictions)
+- 2 Conv layers followed by a MaxPool2D(2)
+- 1 Conv layer  followed by a MaxPool2D(2)
+- 1 Conv layer followed by a MaxPool2D(2)
+- Flatten layer
+- 2 Dense layers with 128 hidden uinits and 64 hidden unitis respectivelly with a ReLU activation
+- output layer (output_shape (len(class_names)) with a softmax activation method
+ - number of epochs 10
+ ###Model evaluation:
+|Metric|Accuracy|Loss|
+|----------------------------|--------------|----------|
+|Accuracy | 79%| 0.57|
+|Validation accuracy | 82%| 0.61|
+|Test acccuracy |81%| 0.49|
+
+>**Note:**
+Model 2 > Model 6
+
+## Model 7:
+### Architecture:
+- same as model 2.
+- adding some randomness to the data.
+- number of epochs 10
+
+ ###Model evaluation:
+|Metric|Accuracy|Loss|
+|----------------------------|--------------|----------|
+|Accuracy | 75%| 0.8|
+|Validation accuracy | 83.9%| 0.4|
+|Test acccuracy |84%| 0.51|
+
+>**Note:**
+the loss function of the validation data drop from 2 to 0.4 (in the 8th epoch) however it stared increasing just after the 8th epoch
+> ***Conclusion:***
+The optimial number of training epochs is 8, adding randomness leads to an improvement of the model.
+
+
+## Model 8:
+###Architecture:
+- same as model 7.
+- number of training epochs= 8 (10->8)
+- No data augmentation only Normalization
+
+### Model evaluation:
+|Metric|Accuracy|Loss|
+|----------------------------|--------------|----------|
+|Accuracy | 89%| 0.15|
+|Validation accuracy = 88%| 0.7|
+|Test acccuracy = 89%| 0.42|
+
+>**Note:**
+the loss function of the validation data drop from 2 to 0.7
+
+> ***Conclusion:***
+The optimial number of training epochs is 8, no data augmentation leades to an improvement of the model only if the input image is clear.
+
+## Model 9
+### Data Preprocessing:
+- Training data was augmented by Normalization, rotate the training images by 20 degrees.
+- Test and validation data were Normalized.
+
+### Architecture:
+- Input layer Conv2D with input_shape(224,224,3), 10 filters, kernel size of 3
+- Conv2D layer with same parameters as the input layer without the input shape. 
+- MaxPool() layer.
+- 2 more Conv2D with same parameters followed by a MaxPool() layer.
+- Fllaten layer followed by an output layer (Dense layer) with an output shape of len(class_names), and a softmax activation method.
+
+### Model evaluation:
+| Metric                     | Accuracy     | Loss     |
+|----------------------------|--------------|----------|
+| Training                   | 92%          | 0.24     |
+| Validation                 | 88.75%       | 0.45     |
+| Test                       | 89.69%       | 0.43     |
+
+>**Note:**
+A slight increase of the test accuracy compared to the previous model.
+
+>***Conclusion:***
+Rotating the image does not lead to a noticeable improvement of the model specially when the input image is not clear.
